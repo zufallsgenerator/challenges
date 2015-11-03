@@ -7,7 +7,7 @@ def main():
 		sys.stderr.write('Usage: %s yourname domain pattern\n' % sys.argv[0])
 		sys.exit(1)
 
-	email = "%s.%s@%s" % (sys.argv[1], "%d", sys.argv[2])
+	email = "%s+%s@%s" % (sys.argv[1], "%d", sys.argv[2])
 	pattern = sys.argv[3]
 
 	i = 0
