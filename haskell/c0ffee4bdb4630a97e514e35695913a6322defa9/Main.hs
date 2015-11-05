@@ -1,47 +1,36 @@
-import Data.List (find)
-import qualified Data.ByteString.Char8 as Char8
-import qualified Data.ByteString.Base16 as Base16
+import Control.Arrow
 import qualified Crypto.Hash.SHA1 as SHA1
+import qualified Data.ByteString.Base16 as Base16
+import qualified Data.ByteString.Char8 as Char8
+import Data.List (find)
 import Text.Printf (printf)
 
--- Format an email given a prefix, suffix, and variable part
-fmtEmail prefix suffix i = prefix ++ i ++ suffix
+-- Format my email with variable part
+fmtEmail :: String -> String
+fmtEmail i = "example+" ++ i ++ "@example.com"
 
--- Generate a list of all possible integers
-bruteIntegers = [0..]
+-- Enumerated email generator
+emails :: [(Integer, String)]
+emails = map (id &&& fmtEmail . show) [0..]
 
--- Casted as strings
-bruteIntegerStrings = map show bruteIntegers
-
--- Formatted as emails
-bruteEmails prefix suffix =
-  map fmt bruteIntegerStrings where
-    fmt = fmtEmail prefix suffix
-
--- Bound to my email pattern
-bruteMyEmails = bruteEmails "example+" "@example.com"
+-- Enumerated email and hash generator
+hashes :: [(Integer, (String, Char8.ByteString))]
+hashes = map (id *** (id &&& SHA1.hash . Char8.pack)) emails
 
 -- Coffee bytes
+coffee :: Char8.ByteString
 coffee = fst $ Base16.decode $ Char8.pack "c0ffee"
 
--- Test if given bytes begins with coffee bytes
-isCoffee bytes = coffee == Char8.take (Char8.length coffee) bytes
+isCoffee :: Char8.ByteString -> Bool
+isCoffee = Char8.isPrefixOf coffee
 
--- Hash a string
-sha1 str = SHA1.hash $ Char8.pack str
+-- Display final result
+display :: (Integer, (String, Char8.ByteString)) -> IO ()
+display (i, (email, hash)) =
+  let hex = Char8.unpack $ Base16.encode hash
+  in printf "Found %s with hash %s after %d tries\n" email hex i
 
--- Encoded version
-sha1hex str = Char8.unpack $ Base16.encode $ sha1 str
-
--- Test if given hashed email begins with coffee
-isCoffeeStr str = isCoffee $ sha1 str
-
-display :: (Integer, String) -> IO ()
-display (i, email) =
-  let hash = sha1hex email
-  in printf "Found %s with hash %s after %d tries\n" email hash i
-
-main =
-  let indexedEmails = zip [0..] bruteMyEmails
-      match = find (isCoffeeStr . snd) indexedEmails
-  in case match of Just match -> display match
+main :: IO ()
+main = case find (isCoffee . snd . snd) hashes of
+  Just match -> display match
+  Nothing -> putStrLn "Congratulations, you just reach the end of infinity"
