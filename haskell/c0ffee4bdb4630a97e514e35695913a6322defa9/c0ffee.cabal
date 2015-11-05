@@ -1,0 +1,7 @@
+name: c0ffee
+version: 0.1.0.0
+build-type: Simple
+
+executable c0ffee
+  main-is: Main.hs
+  build-depends: base, bytestring, base16-bytestring, cryptohash
