@@ -1,0 +1,27 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+version = '1.0'
+group = 'de.egga'
+mainClassName = 'MailAddressGenerator'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile(
+            'commons-codec:commons-codec:1.10',
+    )
+
+    testCompile(
+            'junit:junit:4.12',
+            'org.assertj:assertj-core:3.1.0',
+    )
+}
+
+run {
+    args System.getProperty("exec.args").split()
+}
