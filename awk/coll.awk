@@ -8,13 +8,13 @@ BEGIN { FS="@"; }
  mailEnd=$2;
 
  loops=10000000;
+ cmd="sha1sum -t" 
 };
 { 
   print "Finding collisions for " mailStart "+<number>@" mailEnd;
 
   for( seed=0; seed<=loops; seed++) {
     address = mailStart"+"seed"@"mailEnd;
-    cmd="sha1sum -t" 
     printf "%s",address |& cmd;
     close(cmd,"to");
     cmd |& getline hash
