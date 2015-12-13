@@ -1,0 +1,7 @@
+[package]
+name = "coffee"
+version = "0.1.0"
+authors = ["Benjamin Bollen <benjamin.bollen@seetale.net>"]
+
+[dependencies]
+sha1 = "0.1.1"
